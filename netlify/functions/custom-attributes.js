@@ -11,7 +11,7 @@ const allowedOrigins = [
   "https://www.petscriptions.ca",
 ];
 const optionHeaders = {
-  "Access-Control-Allow-Headers": "authorization,content-type,foxy-api-version",
+  "Access-Control-Allow-Headers": "authorization,Content-Type,foxy-api-version",
   "Access-Control-Allow-Methods": "GET, PATCH, OPTION",
   "Access-Control-Allow-Origin": "",
 };
@@ -24,7 +24,7 @@ const commandTable = {
 
 function processRequest(event) {
   const { httpMethod } = event;
-  commandTable[httpMethod](event);
+  return commandTable[httpMethod](event);
 }
 //Respond with http options
 function handleOptions(event) {
@@ -35,17 +35,14 @@ function handleOptions(event) {
     optionHeaders["Access-Control-Allow-Origin"] = headers.origin;
     return {
       headers: optionHeaders,
-      statusCode: 200,
+      statusCode: 204,
     };
   }
 }
 
 function handleGet() {}
 
-function handlePatch() {}
-
-exports.handler = async (event, context) => {
-  processRequest(event);
+function handlePatch() {
   try {
   } catch (error) {
     console.log("ERROR: ", error);
@@ -58,4 +55,8 @@ exports.handler = async (event, context) => {
       statusCode: 500,
     };
   }
+}
+
+exports.handler = async (event, context) => {
+  return processRequest(event);
 };
