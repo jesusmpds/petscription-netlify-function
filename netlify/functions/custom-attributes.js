@@ -40,7 +40,7 @@ function handleOptions(event) {
   if (allowedOrigins.includes(headers.origin)) {
     responseHeader.optionsResponse["Access-Control-Allow-Origin"] = headers.origin;
     return {
-      headers: optionHeaders,
+      headers: responseHeader.optionsResponse,
       statusCode: 204,
     };
   }
@@ -53,7 +53,7 @@ function handleGet(event) {
   if (allowedOrigins.includes(headers.origin)) {
     responseHeader.getResponse["Access-Control-Allow-Origin"] = headers.origin;
     return {
-      headers: optionHeaders,
+      headers: responseHeader.getResponse,
       statusCode: 200,
       body: {
         _links: {
