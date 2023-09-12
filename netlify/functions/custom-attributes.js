@@ -18,6 +18,7 @@ const responseHeader = {
   },
   getResponse: {
     "Access-Control-Allow-Origin": "",
+    "Content-Type": "application/json; charset=utf-8",
   },
 };
 
@@ -55,7 +56,7 @@ function handleGet(event) {
     return {
       headers: responseHeader.getResponse,
       statusCode: 200,
-      body: {
+      body: JSON.stringify({
         _links: {
           self: {
             href: "https://petscriptions-live.foxycart.com/s/customer/",
@@ -170,7 +171,7 @@ function handleGet(event) {
         tax_id: "",
         date_created: "2023-08-30T11:33:01-07:00",
         date_modified: "2023-09-08T11:24:58-07:00",
-      },
+      }),
     };
   }
 }
