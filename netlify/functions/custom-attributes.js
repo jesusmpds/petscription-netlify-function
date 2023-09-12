@@ -39,6 +39,10 @@ function handleOptions(event) {
   }
 }
 
+function handleGet() {}
+
+function handlePatch() {}
+
 exports.handler = async (event, context) => {
   try {
     processRequest(event);
