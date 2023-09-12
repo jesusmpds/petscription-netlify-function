@@ -12,7 +12,7 @@ const allowedOrigins = [
 ];
 const optionHeaders = {
   "Access-Control-Allow-Headers": "authorization,content-type,foxy-api-version",
-  "Access-Control-Allow-Methods": "GET,PATCH",
+  "Access-Control-Allow-Methods": "GET, PATCH, OPTION",
   "Access-Control-Allow-Origin": "",
 };
 
@@ -29,7 +29,8 @@ function processRequest(event) {
 //Respond with http options
 function handleOptions(event) {
   const { body, headers, httpMethod } = event;
-  console.log("event", event);
+  console.log("OPTIONS", event);
+  console.log("headers.origin", headers.origin);
   if (allowedOrigins.includes(headers.origin)) {
     optionHeaders["Access-Control-Allow-Origin"] = headers.origin;
     return {
@@ -44,8 +45,8 @@ function handleGet() {}
 function handlePatch() {}
 
 exports.handler = async (event, context) => {
+  processRequest(event);
   try {
-    processRequest(event);
   } catch (error) {
     console.log("ERROR: ", error);
     return {
