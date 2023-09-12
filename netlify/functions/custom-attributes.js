@@ -10,7 +10,7 @@ const allowedOrigins = [
   "https://petscriptions.ca",
   "https://www.petscriptions.ca",
 ];
-const headers = {
+const responseHeader = {
   optionsResponse: {
     "Access-Control-Allow-Headers": "authorization,Content-Type,foxy-api-version",
     "Access-Control-Allow-Methods": "GET, PATCH, OPTION",
@@ -38,7 +38,7 @@ function handleOptions(event) {
   console.log("OPTIONS", event);
   console.log("headers.origin", headers.origin);
   if (allowedOrigins.includes(headers.origin)) {
-    headers.optionsResponse["Access-Control-Allow-Origin"] = headers.origin;
+    responseHeader.optionsResponse["Access-Control-Allow-Origin"] = headers.origin;
     return {
       headers: optionHeaders,
       statusCode: 204,
@@ -51,7 +51,7 @@ function handleGet(event) {
   const { body, headers } = event;
   console.log("GET Request", event);
   if (allowedOrigins.includes(headers.origin)) {
-    headers.getResponse["Access-Control-Allow-Origin"] = headers.origin;
+    responseHeader.getResponse["Access-Control-Allow-Origin"] = headers.origin;
     return {
       headers: optionHeaders,
       statusCode: 200,
