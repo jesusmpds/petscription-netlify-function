@@ -71,7 +71,8 @@ async function handleGet(event) {
       const response = await foxy.fetch(customerAttributesCollection(customerID));
       if (response.ok) {
         const customerAttributes = await response.json();
-        console.log(customerAttributes);
+        console.log("customerAttributes", customerAttributes);
+        console.log("Embedded Resources", customerAttributes._embedded);
 
         return {
           headers: responseHeader.getResponse,
