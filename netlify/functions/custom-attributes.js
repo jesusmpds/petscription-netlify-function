@@ -71,7 +71,7 @@ async function handleGet(event) {
   const customerID = queryStringParameters?.customer;
 
   console.log("GET Request", event);
-  if (allowedOrigins.includes(headers.origin) && customerID) {
+  if (allowedOrigins.includes(headers.origin) && headers.authorization && customerID) {
     responseHeader.okResponse["Access-Control-Allow-Origin"] = headers.origin;
     try {
       const response = await foxy.fetch(customerAttributesCollection(customerID));
@@ -87,7 +87,7 @@ async function handleGet(event) {
           attribute => {
             const attributeUrl = attribute._links.self.href;
             const attributeID = attributeUrl.split("customer_attributes/")[1];
-            const newURL = `${netlifyEndpoint}?customer=${customerID}&attribute=${attributeID}`;
+            const newURL = `${netlifyEndpoint}?attribute=${attributeID}`;
 
             // Assign new value
             attribute._links.self.href = newURL;
@@ -125,7 +125,7 @@ async function handleGet(event) {
 async function handlePatch(event) {
   const { body, headers, queryStringParameters } = event;
   const attributeID = queryStringParameters?.attribute;
-  if (allowedOrigins.includes(headers.origin) && attributeID) {
+  if (allowedOrigins.includes(headers.origin) && headers.authorization && attributeID) {
     responseHeader.okResponse["Access-Control-Allow-Origin"] = headers.origin;
     try {
       console.log("PATCH", event);
