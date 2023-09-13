@@ -9,6 +9,8 @@ const netlifyEndpoint =
   "https://ephemeral-tapioca-3c3a8a.netlify.app/.netlify/functions/custom-attributes";
 const customerAttributesCollection = customerID =>
   `https://api.foxycart.com/customers/${customerID}/attributes`;
+const customerAttributeResource = attributeID =>
+  `https://api.foxycart.com/customer_attributes/${attributeID}`;
 const allowedOrigins = [
   "https://petscriptions-6d43af.webflow.io",
   "https://petscriptions.ca",
@@ -19,10 +21,12 @@ const responseHeader = {
     "Access-Control-Allow-Headers": "authorization,Content-Type,foxy-api-version",
     "Access-Control-Allow-Methods": "GET, PATCH, OPTION",
     "Access-Control-Allow-Origin": "",
+    Vary: "Origin",
   },
-  getResponse: {
+  okResponse: {
     "Access-Control-Allow-Origin": "",
     "Content-Type": "application/json; charset=utf-8",
+    Vary: "Origin",
   },
 };
 
@@ -68,7 +72,7 @@ async function handleGet(event) {
 
   console.log("GET Request", event);
   if (allowedOrigins.includes(headers.origin) && customerID) {
-    responseHeader.getResponse["Access-Control-Allow-Origin"] = headers.origin;
+    responseHeader.okResponse["Access-Control-Allow-Origin"] = headers.origin;
     try {
       const response = await foxy.fetch(customerAttributesCollection(customerID));
       if (response.ok) {
@@ -97,7 +101,7 @@ async function handleGet(event) {
           JSON.stringify(customerAttributes._embedded, null, "\t")
         );
         return {
-          headers: responseHeader.getResponse,
+          headers: responseHeader.okResponse,
           statusCode: 200,
           body: JSON.stringify(customerAttributes),
         };
@@ -108,21 +112,52 @@ async function handleGet(event) {
       return errorResponse("An Error has ocurred when fetching the customer attributes");
     }
   }
+
+  return {
+    statusCode: 400,
+    body: {
+      ok: false,
+      details: " Not an allowed origin or missing the customer ID",
+    },
+  };
 }
 
-function handlePatch(event) {
+async function handlePatch(event) {
   const { body, headers, queryStringParameters } = event;
-  const customerID = queryStringParameters?.customer;
   const attributeID = queryStringParameters?.attribute;
+  if (allowedOrigins.includes(headers.origin) && attributeID) {
+    responseHeader.okResponse["Access-Control-Allow-Origin"] = headers.origin;
+    try {
+      console.log("PATCH", event);
+      const response = await foxy.fetch(customerAttributeResource(attributeID), {
+        method: "PATCH",
+        body,
+      });
+      if (response.ok) {
+        const newAttribute = await response.json();
+        console.log("newAttribute", newAttribute);
 
-  try {
-    console.log("PATCH", event);
-  } catch (error) {
-    console.log("ERROR: ", error);
-    return errorResponse(
-      `An Error has ocurred when patching the customer attribute ${attributeID}`
-    );
+        return {
+          headers: responseHeader.okResponse,
+          statusCode: 200,
+          body: JSON.stringify(newAttribute),
+        };
+      }
+      return Promise.reject(response);
+    } catch (error) {
+      console.log("ERROR: ", error);
+      return errorResponse(
+        `An Error has ocurred when patching the customer attribute ${attributeID}`
+      );
+    }
   }
+  return {
+    statusCode: 400,
+    body: {
+      ok: false,
+      details: " Not an allowed origin or missing the attribute ID",
+    },
+  };
 }
 
 exports.handler = async (event, context) => {
