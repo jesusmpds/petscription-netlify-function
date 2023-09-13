@@ -74,7 +74,10 @@ async function handleGet(event) {
       if (response.ok) {
         const customerAttributes = await response.json();
         console.log("customerAttributes", customerAttributes);
-        console.log("Embedded Resources Original", JSON.stringify(customerAttributes._embedded));
+        console.log(
+          "Embedded Resources Original",
+          JSON.stringify(customerAttributes._embedded, null, "\t")
+        );
 
         const customerAttributesCustomSelf = customerAttributes._embedded["fx:attributes"].map(
           attribute => {
@@ -89,7 +92,10 @@ async function handleGet(event) {
         );
 
         customerAttributes._embedded["fx:attributes"] = customerAttributesCustomSelf;
-
+        console.log(
+          "Embedded Resources New",
+          JSON.stringify(customerAttributes._embedded, null, "\t")
+        );
         return {
           headers: responseHeader.getResponse,
           statusCode: 200,
