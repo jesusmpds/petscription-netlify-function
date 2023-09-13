@@ -81,12 +81,12 @@ async function handleGet(event) {
 
         const customerAttributesCustomSelf = customerAttributes._embedded["fx:attributes"].map(
           attribute => {
-            let attributeUrl = attribute._links.self.href;
+            const attributeUrl = attribute._links.self.href;
             const attributeID = attributeUrl.split("customer_attributes/")[1];
             const newURL = `${netlifyEndpoint}?customer=${customerID}&attribute=${attributeID}`;
 
             // Assign new value
-            attributeUrl = newURL;
+            attribute._links.self.href = newURL;
             return attribute;
           }
         );
