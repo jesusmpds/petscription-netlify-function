@@ -72,7 +72,7 @@ async function handleGet(event) {
       if (response.ok) {
         const customerAttributes = await response.json();
         console.log("customerAttributes", customerAttributes);
-        console.log("Embedded Resources", customerAttributes._embedded);
+        console.log("Embedded Resources", JSON.stringify(customerAttributes._embedded));
 
         return {
           headers: responseHeader.getResponse,
