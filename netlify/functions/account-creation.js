@@ -25,6 +25,17 @@ const errorResponse = details => {
   };
 };
 
+const prescribingDoctors = [
+  { name: "Prescribing_Doctor_1", value: "N/A", visibility: "public" },
+  { name: "Prescribing Doctor_2", value: "N/A", visibility: "public" },
+  { name: "Prescribing Doctor_3", value: "N/A", visibility: "public" },
+  { name: "Prescribing Doctor_4", value: "N/A", visibility: "public" },
+  { name: "Prescribing Doctor_5", value: "N/A", visibility: "public" },
+  { name: "Prescribing Doctor_6", value: "N/A", visibility: "public" },
+  { name: "Prescribing Doctor_7", value: "N/A", visibility: "public" },
+  { name: "Prescribing Doctor_8", value: "N/A", visibility: "public" },
+];
+
 // Netlify Function
 exports.handler = async event => {
   const { body, headers } = event;
@@ -47,8 +58,11 @@ exports.handler = async event => {
     email: data.email,
   };
 
-  const formCustomerAttributes = Object.keys(data).map(key => {
-    if (key.includes("Prescribing")) return { name: key, value: data[key], visibility: "public" };
+  const formCustomerAttributes = prescribingDoctors.map(doctor => {
+    if (Object.keys(body).includes(doctor.name)) {
+      return { name: doctor.name, value: body[doctor.name], visibility: "public" };
+    }
+    return doctor;
   });
 
   const defaultAddress = {
