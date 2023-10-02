@@ -27,13 +27,13 @@ const errorResponse = details => {
 
 const prescribingDoctors = [
   { name: "Prescribing_Doctor_1", value: "N/A", visibility: "public" },
-  { name: "Prescribing Doctor_2", value: "N/A", visibility: "public" },
-  { name: "Prescribing Doctor_3", value: "N/A", visibility: "public" },
-  { name: "Prescribing Doctor_4", value: "N/A", visibility: "public" },
-  { name: "Prescribing Doctor_5", value: "N/A", visibility: "public" },
-  { name: "Prescribing Doctor_6", value: "N/A", visibility: "public" },
-  { name: "Prescribing Doctor_7", value: "N/A", visibility: "public" },
-  { name: "Prescribing Doctor_8", value: "N/A", visibility: "public" },
+  { name: "Prescribing_Doctor_2", value: "N/A", visibility: "public" },
+  { name: "Prescribing_Doctor_3", value: "N/A", visibility: "public" },
+  { name: "Prescribing_Doctor_4", value: "N/A", visibility: "public" },
+  { name: "Prescribing_Doctor_5", value: "N/A", visibility: "public" },
+  { name: "Prescribing_Doctor_6", value: "N/A", visibility: "public" },
+  { name: "Prescribing_Doctor_7", value: "N/A", visibility: "public" },
+  { name: "Prescribing_Doctor_8", value: "N/A", visibility: "public" },
 ];
 
 // Netlify Function
