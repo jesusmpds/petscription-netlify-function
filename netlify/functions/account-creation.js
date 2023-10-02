@@ -65,6 +65,7 @@ exports.handler = async event => {
     return doctor;
   });
 
+  console.log("formCustomerAttributes", formCustomerAttributes);
   const defaultAddress = {
     address_name: "Me",
     first_name: data.first_name,
@@ -117,7 +118,7 @@ exports.handler = async event => {
       })
     ).json();
 
-    console.log("newCustomer attributes", JSON.stringify(attributes));
+    console.log("newCustomer attributes", JSON.stringify(attributes._embedded));
 
     const address = await (
       await foxy.fetch(customerDefaultShippingAddress, {
@@ -126,7 +127,7 @@ exports.handler = async event => {
       })
     ).json();
 
-    console.log("newCustomer address", JSON.stringify(address));
+    console.log("newCustomer address", JSON.stringify(address._embedded));
 
     return {
       body: JSON.stringify({
