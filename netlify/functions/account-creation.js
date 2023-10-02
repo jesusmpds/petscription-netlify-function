@@ -59,8 +59,8 @@ exports.handler = async event => {
   };
 
   const formCustomerAttributes = prescribingDoctors.map(doctor => {
-    if (Object.keys(body).includes(doctor.name)) {
-      return { name: doctor.name, value: body[doctor.name], visibility: "public" };
+    if (Object.keys(data).includes(doctor.name)) {
+      return { name: doctor.name, value: data[doctor.name], visibility: "public" };
     }
     return doctor;
   });
@@ -110,7 +110,7 @@ exports.handler = async event => {
     console.log("newCustomer", JSON.stringify(newCustomer));
 
     const customerAttributes = newCustomer._links["fx:attributes"].href;
-    const customerDefaultShippingAddress = newCustomer._links["fx:default_shipping_address"].href;
+    const customerDefaultShippingAddress = newCustomer._links["fx:customer_addresses"].href;
 
     const attributes = await (
       await foxy.fetch(customerAttributes, {
