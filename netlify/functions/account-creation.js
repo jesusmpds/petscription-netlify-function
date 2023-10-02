@@ -93,6 +93,7 @@ exports.handler = async event => {
           details: "Customer already exists",
         }),
         statusCode: 409,
+        headers: { "Access-Control-Allow-Origin": headers.origin },
       };
     }
   } catch (error) {
@@ -138,6 +139,7 @@ exports.handler = async event => {
           address,
         },
       }),
+      headers: { "Access-Control-Allow-Origin": headers.origin },
       statusCode: 200,
     };
   } catch (error) {
