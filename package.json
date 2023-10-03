@@ -9,6 +9,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@foxy.io/sdk": "1.10.0"
+    "@foxy.io/sdk": "1.10.0",
+    "airtable": "^0.12.2"
   }
 }

@@ -1,10 +1,13 @@
 const FoxySDK = require("@foxy.io/sdk");
-const { FOXY_REFRESH_TOKEN, FOXY_CLIENT_SECRET, FOXY_CLIENT_ID } = process.env;
+const { FOXY_REFRESH_TOKEN, FOXY_CLIENT_SECRET, FOXY_CLIENT_ID, AIRTABLE_TOKEN } = process.env;
 const foxy = new FoxySDK.Backend.API({
   refreshToken: FOXY_REFRESH_TOKEN,
   clientSecret: FOXY_CLIENT_SECRET,
   clientId: FOXY_CLIENT_ID,
 });
+
+const Airtable = require("airtable");
+const base = new Airtable({ apiKey: AIRTABLE_TOKEN }).base("appR5bTWokItfoRxi");
 
 const customerByEmail = customerEmail =>
   `https://api.foxycart.com/stores/107955/customers?email=${customerEmail}`;
@@ -137,6 +140,55 @@ exports.handler = async event => {
     };
 
     console.log("newCustomer address", JSON.stringify(address._embedded));
+
+    if (newCustomer && attributes && address) {
+      base("Customers").create(
+        [
+          {
+            fields: {
+              "Customer ID": "36452683",
+              "First Name": "TEST",
+              "Last Name": "Foxy",
+              "Email Address": "hareni1038@ipnuc.com",
+              "Phone Number": "1123223322",
+              Orders: [
+                "reciarIn2JVvfV0MD",
+                "recX0vgxK7AGYjTWr",
+                "recjs1iJ4GFBh9vV9",
+                "reccZSZz4hYMx5Vxo",
+              ],
+              "Orders copy": "2115336535 #1, 2115336535 #2, 2115337543 #1, 2115337543 #2",
+            },
+          },
+          {
+            fields: {
+              "Customer ID": "36465246",
+              "First Name": "TEST",
+              "Last Name": "Foxy",
+              "Email Address": "moxamo9547@alvisani.com",
+              "Phone Number": "1123223322",
+              Orders: [
+                "rec2ecbUUtojtySX4",
+                "recZ8onv3JI3VkRjb",
+                "recj3C3F3Z8Md9Ej4",
+                "recaxGdKUi9U80iZO",
+                "recKsAfv1a1nd1sLU",
+              ],
+              "Orders copy": "2115439213 #1, 2115439213 #2, 2115439213 #3",
+            },
+          },
+        ],
+        function (err, records) {
+          if (err) {
+            console.error(err);
+            return;
+          }
+          records.forEach(function (record) {
+            console.log(record.getId());
+          });
+        }
+      );
+    }
 
     return {
       body: JSON.stringify({

@@ -6,7 +6,7 @@ const foxy = new FoxySDK.Backend.API({
   clientId: FOXY_CLIENT_ID,
 });
 const netlifyEndpoint =
-  "https://ephemeral-tapioca-3c3a8a.netlify.app/.netlify/functions/custom-attributes";
+  "https://voluble-churros-0bdaf3.netlify.app/.netlify/functions/custom-attributes";
 const customerAttributesCollection = customerID =>
   `https://api.foxycart.com/customers/${customerID}/attributes`;
 const customerAttributeResource = attributeID =>
