@@ -111,7 +111,7 @@ exports.handler = async event => {
     console.log("newCustomer", JSON.stringify(newCustomer));
 
     const customerAttributes = newCustomer._links["fx:attributes"].href;
-    const customerDefaultShippingAddress = newCustomer._links["fx:customer_addresses"].href;
+    const customerDefaultShippingAddress = newCustomer._links["fx:default_shipping_address"].href;
 
     const attributes = await (
       await foxy.fetch(customerAttributes, {
