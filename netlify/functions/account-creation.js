@@ -9,7 +9,6 @@ const foxy = new FoxySDK.Backend.API({
 const Airtable = require("airtable");
 const base = new Airtable({ apiKey: AIRTABLE_TOKEN }).base("appR5bTWokItfoRxi");
 const customersTableID = "tbl3zQvaiyxRlG7du";
-const customerTable = base(customersTableID);
 const customerByEmail = customerEmail =>
   `https://api.foxycart.com/stores/107955/customers?email=${customerEmail}`;
 const createCustomer = "https://api.foxycart.com/stores/107955/customers";
@@ -144,26 +143,15 @@ exports.handler = async event => {
     console.log("newCustomer address", JSON.stringify(address));
 
     if (customerID) {
-      customerTable.create(
-        {
-          fields: {
-            "Customer ID": `${customerID}`,
-            "First Name": `${customer.first_name}`,
-            "Last Name": `${customer.last_name}`,
-            "Email Address": `${customer.email}`,
-            "Phone Number": `${defaultAddress.phone}`,
-          },
+      await base("Customers").create({
+        fields: {
+          "Customer ID": `${customerID}`,
+          "First Name": `${customer.first_name}`,
+          "Last Name": `${customer.last_name}`,
+          "Email Address": `${customer.email}`,
+          "Phone Number": `${defaultAddress.phone}`,
         },
-        function (err, records) {
-          if (err) {
-            console.error(err);
-            return;
-          }
-          records.forEach(function (record) {
-            console.log(record.getId());
-          });
-        }
-      );
+      });
     }
 
     return {
