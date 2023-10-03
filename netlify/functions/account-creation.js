@@ -110,7 +110,7 @@ exports.handler = async event => {
       body: JSON.stringify(customer),
     });
     const newCustomer = await res.json();
-    const customerID = newCustomer.message.split(" ")[1];
+    const customerID = newCustomer?.message.split(" ")[1];
     console.log("newCustomer", JSON.stringify(newCustomer));
 
     const customerAttributes = newCustomer._links["fx:attributes"].href;
@@ -143,19 +143,17 @@ exports.handler = async event => {
 
     console.log("newCustomer address", JSON.stringify(address));
 
-    if (newCustomer && attributes && address) {
+    if (customerID) {
       customerTable.create(
-        [
-          {
-            fields: {
-              "Customer ID": `${customerID}`,
-              "First Name": `${customer.first_name}`,
-              "Last Name": `${customer.last_name}`,
-              "Email Address": `${customer.email}`,
-              "Phone Number": `${defaultAddress.phone}`,
-            },
+        {
+          fields: {
+            "Customer ID": `${customerID}`,
+            "First Name": `${customer.first_name}`,
+            "Last Name": `${customer.last_name}`,
+            "Email Address": `${customer.email}`,
+            "Phone Number": `${defaultAddress.phone}`,
           },
-        ],
+        },
         function (err, records) {
           if (err) {
             console.error(err);
