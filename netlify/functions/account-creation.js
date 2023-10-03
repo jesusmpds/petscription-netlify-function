@@ -143,7 +143,7 @@ exports.handler = async event => {
     console.log("newCustomer address", JSON.stringify(address));
 
     if (customerID) {
-      await base("Customers").create({
+      const record = await base("Customers").create({
         fields: {
           "Customer ID": `${customerID}`,
           "First Name": `${customer.first_name}`,
@@ -152,6 +152,8 @@ exports.handler = async event => {
           "Phone Number": `${defaultAddress.phone}`,
         },
       });
+
+      console.log("record", record);
     }
 
     return {
