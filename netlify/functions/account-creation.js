@@ -79,8 +79,6 @@ exports.handler = async event => {
     postal_code: data.postal_code,
     country: data.country,
     phone: data.phone,
-    is_default_billing: true,
-    is_default_shipping: true,
   };
 
   // Check if customer exists
@@ -112,6 +110,7 @@ exports.handler = async event => {
 
     const customerAttributes = newCustomer._links["fx:attributes"].href;
     const customerDefaultShippingAddress = newCustomer._links["fx:default_shipping_address"].href;
+    const customerDefaultBillingAddress = newCustomer._links["fx:default_billing_address"].href;
 
     const attributes = await (
       await foxy.fetch(customerAttributes, {
@@ -122,12 +121,20 @@ exports.handler = async event => {
 
     console.log("newCustomer attributes", JSON.stringify(attributes._embedded));
 
-    const address = await (
-      await foxy.fetch(customerDefaultShippingAddress, {
-        method: "PATCH",
-        body: JSON.stringify(defaultAddress),
-      })
-    ).json();
+    const address = {
+      shipping: await (
+        await foxy.fetch(customerDefaultShippingAddress, {
+          method: "PATCH",
+          body: JSON.stringify({ ...defaultAddress, is_default_shipping: true }),
+        })
+      ).json(),
+      billing: await (
+        await foxy.fetch(customerDefaultBillingAddress, {
+          method: "PATCH",
+          body: JSON.stringify({ ...defaultAddress, is_default_billing: true }),
+        })
+      ).json(),
+    };
 
     console.log("newCustomer address", JSON.stringify(address._embedded));
 
