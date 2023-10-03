@@ -124,7 +124,7 @@ exports.handler = async event => {
 
     const address = await (
       await foxy.fetch(customerDefaultShippingAddress, {
-        method: "POST",
+        method: "PATCH",
         body: JSON.stringify(defaultAddress),
       })
     ).json();
