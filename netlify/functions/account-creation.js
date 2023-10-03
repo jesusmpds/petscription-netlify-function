@@ -59,10 +59,11 @@ exports.handler = async event => {
   };
 
   const formCustomerAttributes = prescribingDoctors.map(doctor => {
-    if (Object.keys(data).includes(doctor.name)) {
-      return { name: doctor.name, value: data[doctor.name], visibility: "public" };
-    }
-    return doctor;
+    return {
+      name: doctor.name,
+      value: data[doctor.name] ? data[doctor.name] : "N/A",
+      visibility: "public",
+    };
   });
 
   console.log("formCustomerAttributes", formCustomerAttributes);
