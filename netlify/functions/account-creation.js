@@ -10,7 +10,7 @@ const Airtable = require("airtable");
 const base = new Airtable({ apiKey: AIRTABLE_TOKEN }).base("appR5bTWokItfoRxi");
 const customersTableID = "tbl3zQvaiyxRlG7du";
 const customerByEmail = customerEmail =>
-  `https://api.foxycart.com/stores/107955/customers?email=${customerEmail}`;
+  `https://api.foxycart.com/stores/107955/customers?email=${encodeURIComponent(customerEmail)}`;
 const createCustomer = "https://api.foxycart.com/stores/107955/customers";
 const allowedOrigins = [
   "https://petscriptions-6d43af.webflow.io",
@@ -28,7 +28,7 @@ const errorResponse = details => {
   };
 };
 
-const prescribingDoctors = [
+const prescribingDoctorsInfoTemplate = [
   { name: "Prescribing_Doctor_1", value: "N/A", visibility: "public" },
   { name: "Prescribing_Doctor_2", value: "N/A", visibility: "public" },
   { name: "Prescribing_Doctor_3", value: "N/A", visibility: "public" },
@@ -37,6 +37,22 @@ const prescribingDoctors = [
   { name: "Prescribing_Doctor_6", value: "N/A", visibility: "public" },
   { name: "Prescribing_Doctor_7", value: "N/A", visibility: "public" },
   { name: "Prescribing_Doctor_8", value: "N/A", visibility: "public" },
+  { name: "License_1", value: "N/A", visibility: "public" },
+  { name: "License_2", value: "N/A", visibility: "public" },
+  { name: "License_3", value: "N/A", visibility: "public" },
+  { name: "License_4", value: "N/A", visibility: "public" },
+  { name: "License_5", value: "N/A", visibility: "public" },
+  { name: "License_6", value: "N/A", visibility: "public" },
+  { name: "License_7", value: "N/A", visibility: "public" },
+  { name: "License_8", value: "N/A", visibility: "public" },
+  { name: "uploader-signature-1", value: "N/A", visibility: "public" },
+  { name: "uploader-signature-2", value: "N/A", visibility: "public" },
+  { name: "uploader-signature-3", value: "N/A", visibility: "public" },
+  { name: "uploader-signature-4", value: "N/A", visibility: "public" },
+  { name: "uploader-signature-5", value: "N/A", visibility: "public" },
+  { name: "uploader-signature-6", value: "N/A", visibility: "public" },
+  { name: "uploader-signature-7", value: "N/A", visibility: "public" },
+  { name: "uploader-signature-8", value: "N/A", visibility: "public" },
 ];
 
 // Netlify Function
@@ -56,12 +72,10 @@ exports.handler = async event => {
   }
 
   const customer = {
-    first_name: data.first_name,
-    last_name: data.last_name,
     email: data.email,
   };
 
-  const formCustomerAttributes = prescribingDoctors.map(doctor => {
+  const prescribingDoctorsPayload = prescribingDoctorsInfoTemplate.map(doctor => {
     return {
       name: doctor.name,
       value: data[doctor.name] ? data[doctor.name] : "N/A",
@@ -69,11 +83,9 @@ exports.handler = async event => {
     };
   });
 
-  console.log("formCustomerAttributes", formCustomerAttributes);
+  console.log("prescribingDoctorsPayload", prescribingDoctorsPayload);
   const defaultAddress = {
     address_name: "Me",
-    first_name: data.first_name,
-    last_name: data.last_name,
     company: data.company,
     address1: data.address1,
     address2: data?.address2 ?? "",
@@ -119,7 +131,7 @@ exports.handler = async event => {
     const attributes = await (
       await foxy.fetch(customerAttributes, {
         method: "PATCH",
-        body: JSON.stringify(formCustomerAttributes),
+        body: JSON.stringify(prescribingDoctorsPayload),
       })
     ).json();
 
@@ -145,8 +157,7 @@ exports.handler = async event => {
     if (customerID) {
       const record = await base("Customers").create({
         "Customer ID": `${customerID}`,
-        "First Name": `${customer.first_name}`,
-        "Last Name": `${customer.last_name}`,
+        "Clinic Name": `${defaultAddress.company}`,
         "Email Address": `${customer.email}`,
         "Phone Number": `${defaultAddress.phone}`,
       });
