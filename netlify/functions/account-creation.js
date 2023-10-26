@@ -8,7 +8,6 @@ const foxy = new FoxySDK.Backend.API({
 
 const Airtable = require("airtable");
 const base = new Airtable({ apiKey: AIRTABLE_TOKEN }).base("appR5bTWokItfoRxi");
-const customersTableID = "tbl3zQvaiyxRlG7du";
 const customerByEmail = customerEmail =>
   `https://api.foxycart.com/stores/107955/customers?email=${encodeURIComponent(customerEmail)}`;
 const createCustomer = "https://api.foxycart.com/stores/107955/customers";
@@ -98,7 +97,7 @@ exports.handler = async event => {
 
   // Check if customer exists
   try {
-    const customerExists = await (await foxy.fetch(customerByEmail(customer.email))).json();
+    const customerExists = await foxyFetch(customerByEmail(customer.email), "GET");
 
     if (customerExists.returned_items) {
       return {
@@ -116,11 +115,12 @@ exports.handler = async event => {
   }
 
   try {
-    const res = await foxy.fetch(createCustomer, {
-      method: "POST",
-      body: JSON.stringify(customer),
-    });
-    const newCustomer = await res.json();
+    const newCustomer = await foxyFetch(
+      createCustomer,
+      "POST",
+      customer,
+      "An Error has ocurred when creating the foxy customer"
+    );
     const customerID = newCustomer?.message.split(" ")[1];
     console.log("newCustomer", JSON.stringify(newCustomer));
 
@@ -128,28 +128,48 @@ exports.handler = async event => {
     const customerDefaultShippingAddress = newCustomer._links["fx:default_shipping_address"].href;
     const customerDefaultBillingAddress = newCustomer._links["fx:default_billing_address"].href;
 
-    const attributes = await (
-      await foxy.fetch(customerAttributes, {
-        method: "PATCH",
-        body: JSON.stringify(prescribingDoctorsPayload),
-      })
-    ).json();
+    const prescribingDoctorsPayloadNameAndLicense = [...prescribingDoctorsPayload].slice(0, 15);
+    const prescribingDoctorsPayloadSignatures = [...prescribingDoctorsPayload].slice(16);
 
-    console.log("newCustomer attributes", JSON.stringify(attributes));
+    const attributesNameAndLicense = await foxyFetch(
+      customerAttributes,
+      "PATCH",
+      prescribingDoctorsPayloadNameAndLicense,
+      "An Error has ocurred when creating the foxy attributesNameAndLicense"
+    );
+
+    const attributesSignature = await foxyFetch(
+      customerAttributes,
+      "PATCH",
+      prescribingDoctorsPayloadSignatures,
+      "An Error has ocurred when creating the foxy attributesSignature"
+    );
+
+    console.log(
+      "newCustomer attributes",
+      JSON.stringify(attributesNameAndLicense),
+      JSON.stringify(attributesSignature)
+    );
 
     const address = {
-      shipping: await (
-        await foxy.fetch(customerDefaultShippingAddress, {
-          method: "PATCH",
-          body: JSON.stringify({ ...defaultAddress, is_default_shipping: true }),
-        })
-      ).json(),
-      billing: await (
-        await foxy.fetch(customerDefaultBillingAddress, {
-          method: "PATCH",
-          body: JSON.stringify({ ...defaultAddress, is_default_billing: true }),
-        })
-      ).json(),
+      shipping: await foxyFetch(
+        customerDefaultShippingAddress,
+        "PATCH",
+        {
+          ...defaultAddress,
+          is_default_shipping: true,
+        },
+        "An Error has ocurred when creating the foxy customerDefaultShippingAddress"
+      ),
+      billing: await foxyFetch(
+        customerDefaultBillingAddress,
+        "PATCH",
+        {
+          ...defaultAddress,
+          is_default_billing: true,
+        },
+        "An Error has ocurred when creating the foxy customerDefaultShippingAddress"
+      ),
     };
 
     console.log("newCustomer address", JSON.stringify(address));
@@ -169,9 +189,9 @@ exports.handler = async event => {
       body: JSON.stringify({
         ok: true,
         data: {
-          customer: newCustomer,
-          attributes,
+          attributes: { attributesNameAndLicense, attributesSignature },
           address,
+          customer: newCustomer,
         },
       }),
       headers: { "Access-Control-Allow-Origin": headers.origin },
@@ -182,3 +202,19 @@ exports.handler = async event => {
     return errorResponse("An Error has ocurred when creating the foxy customer");
   }
 };
+
+async function foxyFetch(url, method, payload, errorMessage) {
+  try {
+    const res = await foxy.fetch(url, {
+      method: method,
+      body: payload ? JSON.stringify(payload) : null,
+    });
+
+    if (res.ok) {
+      return await res.json();
+    }
+  } catch (error) {
+    console.log("ERROR: ", error);
+    return errorResponse(errorMessage);
+  }
+}
