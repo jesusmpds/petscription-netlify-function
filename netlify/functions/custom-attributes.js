@@ -8,7 +8,7 @@ const foxy = new FoxySDK.Backend.API({
 const netlifyEndpoint =
   "https://voluble-churros-0bdaf3.netlify.app/.netlify/functions/custom-attributes";
 const customerAttributesCollection = customerID =>
-  `https://api.foxycart.com/customers/${customerID}/attributes`;
+  `https://api.foxycart.com/customers/${customerID}/attributes?limit=40`;
 const customerAttributeResource = attributeID =>
   `https://api.foxycart.com/customer_attributes/${attributeID}`;
 const allowedOrigins = [
