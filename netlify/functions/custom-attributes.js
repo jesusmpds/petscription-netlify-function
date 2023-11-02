@@ -122,8 +122,7 @@ async function handleGet(event) {
 
 async function handlePatch(event) {
   const { body, headers, queryStringParameters } = event;
-  const customerID = queryStringParameters?.customer;
-  if (allowedOrigins.includes(headers.origin) && headers.authorization && customerID) {
+  if (allowedOrigins.includes(headers.origin) && headers.authorization) {
     responseHeader.okResponse["Access-Control-Allow-Origin"] = headers.origin;
 
     const data = JSON.parse(body);
