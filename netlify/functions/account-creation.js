@@ -128,9 +128,8 @@ exports.handler = async event => {
     const customerDefaultShippingAddress = newCustomer._links["fx:default_shipping_address"].href;
     const customerDefaultBillingAddress = newCustomer._links["fx:default_billing_address"].href;
 
-    const prescribingDoctorsPayloadNameAndLicense = [...prescribingDoctorsPayload].slice(0, 15);
+    const prescribingDoctorsPayloadNameAndLicense = [...prescribingDoctorsPayload].slice(0, 16);
     const prescribingDoctorsPayloadSignatures = [...prescribingDoctorsPayload].slice(16);
-
     const attributesNameAndLicense = await foxyFetch(
       customerAttributes,
       "PATCH",

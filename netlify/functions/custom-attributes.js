@@ -7,10 +7,8 @@ const foxy = new FoxySDK.Backend.API({
 });
 const netlifyEndpoint =
   "https://voluble-churros-0bdaf3.netlify.app/.netlify/functions/custom-attributes";
-const customerAttributesCollection = customerID =>
-  `https://api.foxycart.com/customers/${customerID}/attributes?limit=40`;
-const customerAttributeResource = attributeID =>
-  `https://api.foxycart.com/customer_attributes/${attributeID}`;
+const customerAttributesCollection = (customerID, limit = "") =>
+  `https://api.foxycart.com/customers/${customerID}/attributes${!limit ? "" : `?limit=${limit}`}`;
 const allowedOrigins = [
   "https://petscriptions-6d43af.webflow.io",
   "https://petscriptions.ca",
@@ -74,7 +72,7 @@ async function handleGet(event) {
   if (allowedOrigins.includes(headers.origin) && headers.authorization && customerID) {
     responseHeader.okResponse["Access-Control-Allow-Origin"] = headers.origin;
     try {
-      const response = await foxy.fetch(customerAttributesCollection(customerID));
+      const response = await foxy.fetch(customerAttributesCollection(customerID, 40));
       if (response.ok) {
         const customerAttributes = await response.json();
         console.log("customerAttributes", customerAttributes);
@@ -124,15 +122,24 @@ async function handleGet(event) {
 
 async function handlePatch(event) {
   const { body, headers, queryStringParameters } = event;
-  const attributeID = queryStringParameters?.attribute;
-  if (allowedOrigins.includes(headers.origin) && headers.authorization && attributeID) {
+  const customerID = queryStringParameters?.customer;
+  if (allowedOrigins.includes(headers.origin) && headers.authorization && customerID) {
     responseHeader.okResponse["Access-Control-Allow-Origin"] = headers.origin;
+
+    const data = JSON.parse(body);
+    const { customerID, formData } = data;
+
+    const newDoctorInfo = Object.entries(formData).map(([name, value]) => {
+      return { name, value, visibility: "public" };
+    });
+
     try {
       console.log("PATCH", event);
-      const response = await foxy.fetch(customerAttributeResource(attributeID), {
+      const response = await foxy.fetch(customerAttributesCollection(customerID), {
         method: "PATCH",
-        body,
+        body: JSON.stringify(newDoctorInfo),
       });
+
       if (response.ok) {
         const newAttribute = await response.json();
         console.log("newAttribute", newAttribute);
@@ -147,7 +154,7 @@ async function handlePatch(event) {
     } catch (error) {
       console.log("ERROR: ", error);
       return errorResponse(
-        `An Error has ocurred when patching the customer attribute ${attributeID}`
+        `An Error has ocurred when patching the customer attribute ${customerID}`
       );
     }
   }
